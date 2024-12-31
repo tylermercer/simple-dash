@@ -52,7 +52,7 @@ jobs:
         id: deploy
         run: npx wrangler pages deploy --branch=${{ steps.extract_vars.outputs.branch }}
         env:
-          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_KEY }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
 
       - name: Add preview URL to pull request
