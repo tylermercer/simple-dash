@@ -1,5 +1,4 @@
 ---
-import Welcome from '@components/Welcome.astro';
 import Layout from '@layouts/Base.astro';
 
 // Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
@@ -7,5 +6,93 @@ import Layout from '@layouts/Base.astro';
 ---
 
 <Layout>
-	<Welcome />
+    <h1>Bookmarks</h1>
+
+<form id="bookmark-form">
+  <input type="text" id="bookmark-title" placeholder="Title" required />
+  <input type="url" id="bookmark-url" placeholder="URL" required />
+  <button type="submit">Add Bookmark</button>
+</form>
+
+<ul id="bookmark-list" class="bookmark-list"></ul>
 </Layout>
+<style>
+  .bookmark-list {
+    list-style-type: none;
+    padding: 0;
+  }
+  .bookmark-item {
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 0.5rem;
+  }
+  .actions button {
+    margin-left: 0.5rem;
+  }
+</style>
+
+<script>
+  // Select elements
+  const form = document.getElementById('bookmark-form');
+  const titleInput = document.getElementById('bookmark-title');
+  const urlInput = document.getElementById('bookmark-url');
+  const bookmarkList = document.getElementById('bookmark-list');
+
+  // Load bookmarks from localStorage
+  let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+  bookmarks.forEach((bookmark, index) => addBookmarkToDOM(bookmark, index));
+
+  // Add a bookmark to the DOM
+  function addBookmarkToDOM(bookmark, index) {
+    const li = document.createElement('li');
+    li.className = 'bookmark-item';
+    li.dataset.index = index;
+
+    const link = document.createElement('a');
+    link.href = bookmark.url;
+    link.textContent = bookmark.title;
+
+    const deleteButton = document.createElement('button');
+    deleteButton.textContent = 'Delete';
+    deleteButton.addEventListener('click', () => deleteBookmark(index));
+
+    li.appendChild(link);
+    li.appendChild(deleteButton);
+    bookmarkList.appendChild(li);
+  }
+
+  // Remove all child nodes (to re-render the list efficiently)
+  function clearList() {
+    while (bookmarkList.firstChild) {
+      bookmarkList.firstChild.remove();
+    }
+  }
+
+  // Save bookmarks to localStorage
+  function saveBookmarks() {
+    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+  }
+
+  // Add a bookmark
+  form.addEventListener('submit', (event) => {
+    event.preventDefault();
+    const title = titleInput.value.trim();
+    const url = urlInput.value.trim();
+
+    if (title && url) {
+      bookmarks.push({ title, url });
+      saveBookmarks();
+      clearList();
+      bookmarks.forEach((bookmark, index) => addBookmarkToDOM(bookmark, index));
+      form.reset();
+    }
+  });
+
+  // Delete a bookmark
+  function deleteBookmark(index) {
+    bookmarks.splice(index, 1);
+    saveBookmarks();
+    clearList();
+    bookmarks.forEach((bookmark, index) => addBookmarkToDOM(bookmark, index));
+  }
+</script>
