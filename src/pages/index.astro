@@ -1,21 +1,18 @@
 ---
-import Layout from '@layouts/Base.astro';
-
-// Welcome to Astro! Wondering what to do next? Check out the Astro documentation at https://docs.astro.build
-// Don't want to use any of this? Delete everything in this file, the `assets`, `components`, and `layouts` directories, and start fresh.
+import Layout from "@layouts/Base.astro";
 ---
 
 <Layout>
+  <!--Everything after this is horrible ChatGPT code i added from my phone as a POC 😅-->
+  <form class="u-guttered" id="bookmark-form">
+    <input type="text" id="bookmark-title" placeholder="Title" required />
+    <input type="url" id="bookmark-url" placeholder="URL" required />
+    <button type="submit">Add Bookmark</button>
+  </form>
 
-<!--Everything after this is horrible ChatGPT code i added from my phone as a POC 😅-->
-<form id="bookmark-form">
-  <input type="text" id="bookmark-title" placeholder="Title" required />
-  <input type="url" id="bookmark-url" placeholder="URL" required />
-  <button type="submit">Add Bookmark</button>
-</form>
-
-<ul id="bookmark-list" class="bookmark-list"></ul>
+  <ul id="bookmark-list" class="bookmark-list"></ul>
 </Layout>
+
 <style>
   .bookmark-list {
     list-style-type: none;
@@ -33,28 +30,39 @@ import Layout from '@layouts/Base.astro';
 
 <script>
   // Select elements
-  const form = document.getElementById('bookmark-form');
-  const titleInput = document.getElementById('bookmark-title');
-  const urlInput = document.getElementById('bookmark-url');
-  const bookmarkList = document.getElementById('bookmark-list');
+  const form = document.getElementById("bookmark-form") as HTMLFormElement;
+  const titleInput = document.getElementById(
+    "bookmark-title",
+  ) as HTMLInputElement;
+  const urlInput = document.getElementById("bookmark-url") as HTMLInputElement;
+  const bookmarkList = document.getElementById(
+    "bookmark-list",
+  ) as HTMLUListElement;
+
+  type Bookmark = {
+    title: string;
+    url: string;
+  };
 
   // Load bookmarks from localStorage
-  let bookmarks = JSON.parse(localStorage.getItem('bookmarks')) || [];
+  let bookmarks = (JSON.parse(localStorage.getItem("bookmarks") || "[]") ||
+    []) as Bookmark[];
+
   bookmarks.forEach((bookmark, index) => addBookmarkToDOM(bookmark, index));
 
   // Add a bookmark to the DOM
-  function addBookmarkToDOM(bookmark, index) {
-    const li = document.createElement('li');
-    li.className = 'bookmark-item';
-    li.dataset.index = index;
+  function addBookmarkToDOM(bookmark: Bookmark, index: number) {
+    const li = document.createElement("li");
+    li.className = "bookmark-item";
+    li.dataset.index = "" + index;
 
-    const link = document.createElement('a');
+    const link = document.createElement("a");
     link.href = bookmark.url;
     link.textContent = bookmark.title;
 
-    const deleteButton = document.createElement('button');
-    deleteButton.textContent = 'Delete';
-    deleteButton.addEventListener('click', () => deleteBookmark(index));
+    const deleteButton = document.createElement("button");
+    deleteButton.textContent = "Delete";
+    deleteButton.addEventListener("click", () => deleteBookmark(index));
 
     li.appendChild(link);
     li.appendChild(deleteButton);
@@ -70,14 +78,14 @@ import Layout from '@layouts/Base.astro';
 
   // Save bookmarks to localStorage
   function saveBookmarks() {
-    localStorage.setItem('bookmarks', JSON.stringify(bookmarks));
+    localStorage.setItem("bookmarks", JSON.stringify(bookmarks));
   }
 
   // Add a bookmark
-  form.addEventListener('submit', (event) => {
+  form.addEventListener("submit", (event) => {
     event.preventDefault();
-    const title = titleInput.value.trim();
-    const url = urlInput.value.trim();
+    const title = (titleInput as HTMLInputElement).value.trim();
+    const url = (urlInput as HTMLInputElement).value.trim();
 
     if (title && url) {
       bookmarks.push({ title, url });
@@ -89,7 +97,7 @@ import Layout from '@layouts/Base.astro';
   });
 
   // Delete a bookmark
-  function deleteBookmark(index) {
+  function deleteBookmark(index: number) {
     bookmarks.splice(index, 1);
     saveBookmarks();
     clearList();
