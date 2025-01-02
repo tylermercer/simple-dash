@@ -129,3 +129,10 @@ label {
         font-size: var(--step-0);
     }
 }
+
+dialog {
+    border-radius: 16px;
+    padding: var(--space-m);
+    border: 1px solid var(--contrast-color, var(--gray-800));
+    margin: auto;
+}

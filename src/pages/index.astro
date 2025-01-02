@@ -2,16 +2,15 @@
 import UnsplashBackground from "@components/UnsplashBackground.astro";
 import Layout from "@layouts/Base.astro";
 import unsplash from "@utils/unsplash";
+import type { Random } from "unsplash-js/dist/methods/photos/types";
 
-const photo = await unsplash.photos
-  .get({ photoId: "nEw6iC2SOcM" })
-  .then((result) => {
-    if (result.errors) {
-      throw new Error(result.errors.join(", "));
-    } else {
-      return result.response;
-    }
-  });
+const photo = (await unsplash.photos.getRandom({}).then((result) => {
+  if (result.errors) {
+    throw new Error(result.errors.join(", "));
+  } else {
+    return result.response;
+  }
+})) as Random;
 
 const unsplashUrl = photo.urls.regular;
 const unsplashColor = photo.color ?? "#000000";
@@ -19,7 +18,7 @@ const unsplashColor = photo.color ?? "#000000";
 
 <Layout unsplashColor={unsplashColor}>
   <UnsplashBackground unsplashUrl={unsplashUrl} unsplashColor={unsplashColor}>
-    <!--Everything after this is horrible ChatGPT code i added from my phone as a POC 😅-->
+    <!--Most of the code after this is horrible ChatGPT code i added from my phone as a POC 😅-->
     <dialog id="bookmark-dialog">
       <form class="u-guttered" id="bookmark-form" method="dialog">
         <label>
@@ -33,10 +32,8 @@ const unsplashColor = photo.color ?? "#000000";
         <button type="submit">Add Bookmark</button>
       </form>
     </dialog>
-
-    <ul id="bookmark-list" class="u-guttered bookmark-list"></ul>
-
-    <div class="actions u-guttered">
+    <div class="u-guttered">
+      <ul id="bookmark-list" class="bookmark-list"></ul>
       <button id="add-bookmark">Add</button>
     </div>
   </UnsplashBackground>
@@ -45,6 +42,8 @@ const unsplashColor = photo.color ?? "#000000";
 <style>
   .bookmark-list {
     list-style-type: none;
+    padding: 0;
+    margin-top: 0;
     & > :global(.bookmark-item) {
       display: flex;
       justify-content: space-between;
@@ -52,12 +51,10 @@ const unsplashColor = photo.color ?? "#000000";
       margin-bottom: 0.5rem;
     }
   }
-  .actions button {
-    margin-left: 0.5rem;
-  }
 
   dialog {
     text-shadow: none;
+    color: var(--gray-900);
   }
 </style>
 
