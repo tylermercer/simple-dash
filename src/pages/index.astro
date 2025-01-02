@@ -20,14 +20,25 @@ const unsplashColor = photo.color ?? "#000000";
 <Layout unsplashColor={unsplashColor}>
   <UnsplashBackground unsplashUrl={unsplashUrl} unsplashColor={unsplashColor}>
     <!--Everything after this is horrible ChatGPT code i added from my phone as a POC 😅-->
-    <form class="u-guttered" id="bookmark-form">
-      <input type="text" id="bookmark-title" placeholder="Title" required />
-      <input type="url" id="bookmark-url" placeholder="URL" required />
-      <hr>
-      <button type="submit">Add Bookmark</button>
-    </form>
+    <dialog id="bookmark-dialog">
+      <form class="u-guttered" id="bookmark-form" method="dialog">
+        <label>
+          Name
+          <input type="text" id="bookmark-title" required />
+        </label>
+        <label>
+          URL
+          <input type="url" id="bookmark-url" required />
+        </label>
+        <button type="submit">Add Bookmark</button>
+      </form>
+    </dialog>
 
     <ul id="bookmark-list" class="u-guttered bookmark-list"></ul>
+
+    <div class="actions u-guttered">
+      <button id="add-bookmark">Add</button>
+    </div>
   </UnsplashBackground>
 </Layout>
 
@@ -35,12 +46,18 @@ const unsplashColor = photo.color ?? "#000000";
   .bookmark-list {
     list-style-type: none;
     & > :global(.bookmark-item) {
-    display: flex;
-    justify-content: space-between;
-    margin-bottom: 0.5rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: baseline;
+      margin-bottom: 0.5rem;
+    }
   }
   .actions button {
     margin-left: 0.5rem;
+  }
+
+  dialog {
+    text-shadow: none;
   }
 </style>
 
@@ -54,6 +71,12 @@ const unsplashColor = photo.color ?? "#000000";
   const bookmarkList = document.getElementById(
     "bookmark-list",
   ) as HTMLUListElement;
+  const dialog = document.getElementById(
+    "bookmark-dialog",
+  ) as HTMLDialogElement;
+  const addBookmarkButton = document.getElementById(
+    "add-bookmark",
+  ) as HTMLButtonElement;
 
   type Bookmark = {
     title: string;
@@ -99,6 +122,7 @@ const unsplashColor = photo.color ?? "#000000";
 
   // Add a bookmark
   form.addEventListener("submit", (event) => {
+    dialog.close();
     event.preventDefault();
     const title = (titleInput as HTMLInputElement).value.trim();
     const url = (urlInput as HTMLInputElement).value.trim();
@@ -119,4 +143,16 @@ const unsplashColor = photo.color ?? "#000000";
     clearList();
     bookmarks.forEach((bookmark, index) => addBookmarkToDOM(bookmark, index));
   }
+
+  addBookmarkButton.addEventListener("click", () => {
+    dialog.showModal();
+  });
+  dialog.addEventListener("close", () => {
+    form.reset();
+  });
+  dialog.addEventListener("click", (event) => {
+    if (event.target === event.currentTarget) {
+      dialog.close();
+    }
+  });
 </script>
