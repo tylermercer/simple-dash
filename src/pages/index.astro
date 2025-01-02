@@ -4,7 +4,8 @@ import Layout from "@layouts/Base.astro";
 import unsplash from "@utils/unsplash";
 import type { Random } from "unsplash-js/dist/methods/photos/types";
 
-const photo = (await unsplash.photos.getRandom({}).then((result) => {
+const photo = (await unsplash.photos.getRandom({ collectionIds: ['tSYIORfdTvs'] })
+  .then((result) => {
   if (result.errors) {
     throw new Error(result.errors.join(", "));
   } else {
