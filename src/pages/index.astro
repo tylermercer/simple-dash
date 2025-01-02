@@ -23,19 +23,18 @@ const unsplashColor = photo.color ?? "#000000";
     <form class="u-guttered" id="bookmark-form">
       <input type="text" id="bookmark-title" placeholder="Title" required />
       <input type="url" id="bookmark-url" placeholder="URL" required />
+      <hr>
       <button type="submit">Add Bookmark</button>
     </form>
 
-    <ul id="bookmark-list" class="bookmark-list"></ul>
+    <ul id="bookmark-list" class="u-guttered bookmark-list"></ul>
   </UnsplashBackground>
 </Layout>
 
 <style>
   .bookmark-list {
     list-style-type: none;
-    padding: 0;
-  }
-  .bookmark-item {
+    & > :global(.bookmark-item) {
     display: flex;
     justify-content: space-between;
     margin-bottom: 0.5rem;
